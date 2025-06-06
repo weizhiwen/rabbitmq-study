@@ -1,0 +1,41 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://192.168.3.21:15432/food
+    username: postgres
+    password: 123456
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 10
+      idle-timeout: 30000
+      pool-name: HikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    show-sql: true
+  rabbitmq:
+    addresses: 192.168.3.21:15672
+    username: admin
+    password: admin
+    virtual-host: /
+    publisher-returns: true
+    publisher-confirm-type: CORRELATED
+    listener:
+      simple:
+        acknowledge-mode: manual
+        concurrency: 3
+        max-concurrency: 10
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 1000
+          multiplier: 2
+          max-interval: 10000
+        prefetch: 2
