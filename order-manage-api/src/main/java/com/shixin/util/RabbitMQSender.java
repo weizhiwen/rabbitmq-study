@@ -22,6 +22,7 @@ public class RabbitMQSender {
     private RabbitTemplate rabbitTemplate;
 
     public void send(RabbitMQMessage message) {
+        // TODO 插入本地消息表，即使暂时无法发送消息，也能通过定时任务再次发送
         if (TransactionSynchronizationManager.isActualTransactionActive()) {
             List<RabbitMQMessage> messages = messageBuffer.get();
             // 只需要注册一次事务同步器，在事务提交或回滚时，统一发送消息

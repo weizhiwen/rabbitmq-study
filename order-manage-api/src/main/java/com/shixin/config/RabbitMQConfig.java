@@ -3,14 +3,15 @@ package com.shixin.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.*;
-import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.retry.backoff.ExponentialBackOffPolicy;
+import org.springframework.retry.policy.SimpleRetryPolicy;
+import org.springframework.retry.support.RetryTemplate;
 
 @Configuration
 public class RabbitMQConfig {
@@ -51,6 +52,20 @@ public class RabbitMQConfig {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         rabbitTemplate.setMessageConverter(messageConverter);
 
+        // 支持发送方重试
+        RetryTemplate retryTemplate = new RetryTemplate();
+        SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
+        retryPolicy.setMaxAttempts(3); // 最多重试 3 次
+        retryTemplate.setRetryPolicy(retryPolicy);
+        ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
+        backOffPolicy.setInitialInterval(1000);  // 初始等待时间 1 秒
+        backOffPolicy.setMultiplier(2.0);        // 每次乘以 2
+        backOffPolicy.setMaxInterval(5000);      // 最多等待 5 秒
+        retryTemplate.setBackOffPolicy(backOffPolicy);
+        rabbitTemplate.setRetryTemplate(retryTemplate);
+
+        // 开启消息确认回调
+        rabbitTemplate.setMandatory(true);
         rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> {
             if (ack) {
                 log.info("消息投递到交换机成功，correlationData={}", correlationData);
@@ -59,7 +74,6 @@ public class RabbitMQConfig {
             }
         });
 
-        rabbitTemplate.setMandatory(true);
         rabbitTemplate.setReturnsCallback((returned) -> {
             log.info("消息投递到队列失败，returned={}", returned);
         });
