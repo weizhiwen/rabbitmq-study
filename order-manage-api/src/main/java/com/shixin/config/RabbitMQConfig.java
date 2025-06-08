@@ -1,7 +1,6 @@
 package com.shixin.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -13,9 +12,12 @@ import org.springframework.retry.backoff.ExponentialBackOffPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
 
+@Slf4j
 @Configuration
 public class RabbitMQConfig {
-    private static final Logger log = LoggerFactory.getLogger(RabbitMQConfig.class);
+    public static final String ORDER_EXCHANGE = "exchange.order";
+    public static final String ORDER_QUEUE = "queue.order";
+    public static final String ORDER_ROUTING_KEY = "key.order";
 
 //    @Bean
 //    public ConnectionFactory connectionFactory() {
@@ -55,12 +57,12 @@ public class RabbitMQConfig {
         // 支持发送方重试
         RetryTemplate retryTemplate = new RetryTemplate();
         SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
-        retryPolicy.setMaxAttempts(3); // 最多重试 3 次
+        retryPolicy.setMaxAttempts(3);
         retryTemplate.setRetryPolicy(retryPolicy);
         ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
-        backOffPolicy.setInitialInterval(1000);  // 初始等待时间 1 秒
-        backOffPolicy.setMultiplier(2.0);        // 每次乘以 2
-        backOffPolicy.setMaxInterval(5000);      // 最多等待 5 秒
+        backOffPolicy.setInitialInterval(1000);
+        backOffPolicy.setMultiplier(2.0);
+        backOffPolicy.setMaxInterval(5000);
         retryTemplate.setBackOffPolicy(backOffPolicy);
         rabbitTemplate.setRetryTemplate(retryTemplate);
 
@@ -83,16 +85,16 @@ public class RabbitMQConfig {
 
     @Bean
     public Exchange exchange() {
-        return ExchangeBuilder.topicExchange("exchange.order").build();
+        return ExchangeBuilder.topicExchange(ORDER_EXCHANGE).build();
     }
 
     @Bean
     public Queue queue() {
-        return QueueBuilder.durable("queue.order").build();
+        return QueueBuilder.durable(ORDER_QUEUE).build();
     }
 
     @Bean
     public Binding binding(Queue queue, Exchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with("key.order").noargs();
+        return BindingBuilder.bind(queue).to(exchange).with(ORDER_ROUTING_KEY).noargs();
     }
 }

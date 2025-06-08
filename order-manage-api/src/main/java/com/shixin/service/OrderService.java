@@ -7,14 +7,11 @@ import com.shixin.repo.OrderRepo;
 import com.shixin.util.RabbitMQMessage;
 import com.shixin.util.RabbitMQSender;
 import jakarta.annotation.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OrderService {
-    private final static Logger log = LoggerFactory.getLogger(OrderService.class);
 
     @Resource
     private OrderRepo orderRepo;

@@ -1,22 +1,22 @@
 package com.shixin.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.api.RabbitListenerErrorHandler;
 import org.springframework.amqp.rabbit.retry.MessageRecoverer;
-import org.springframework.amqp.rabbit.support.ListenerExecutionFailedException;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.retry.interceptor.RetryOperationsInterceptor;
 
+@Slf4j
 @Configuration
 public class RabbitMQConfig {
-    private static final Logger log = LoggerFactory.getLogger(RabbitMQConfig.class);
+    public static final String RESTAURANT_ROUTING_KEY = "key.restaurant";
+    public static final String RESTAURANT_EXCHANGE = "exchange.restaurant";
+    public static final String RESTAURANT_QUEUE = "queue.restaurant";
 
 //    @Bean
 //    public ConnectionFactory connectionFactory() {
@@ -87,16 +87,16 @@ public class RabbitMQConfig {
 
     @Bean
     public Exchange exchange() {
-        return ExchangeBuilder.topicExchange("exchange.restaurant").build();
+        return ExchangeBuilder.topicExchange(RESTAURANT_EXCHANGE).build();
     }
 
     @Bean
     public Queue queue() {
-        return QueueBuilder.durable("queue.restaurant").build();
+        return QueueBuilder.durable(RESTAURANT_QUEUE).build();
     }
 
     @Bean
     public Binding binding(Queue queue, Exchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with("key.restaurant").noargs();
+        return BindingBuilder.bind(queue).to(exchange).with(RESTAURANT_ROUTING_KEY).noargs();
     }
 }

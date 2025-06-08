@@ -1,8 +1,7 @@
 package com.shixin.util;
 
 import jakarta.annotation.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -12,9 +11,9 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Component
 public class RabbitMQSender {
-    private static final Logger log = LoggerFactory.getLogger(RabbitMQSender.class);
 
     private static final ThreadLocal<List<RabbitMQMessage>> messageBuffer = ThreadLocal.withInitial(ArrayList::new);
 
