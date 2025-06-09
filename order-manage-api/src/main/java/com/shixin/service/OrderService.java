@@ -31,8 +31,8 @@ public class OrderService {
         message.setPrice(save.getPrice());
         message.setConfirm(false);
         rabbitMQSender.send(new RabbitMQMessage("exchange.restaurant", "key.restaurant", message));
-        rabbitMQSender.send(new RabbitMQMessage("exchange.restaurant", "key.restaurant", message));
-        rabbitMQSender.send(new RabbitMQMessage("exchange.restaurant", "key.restaurant", message));
+//        rabbitMQSender.send(new RabbitMQMessage("exchange.restaurant", "key1.restaurant", message));
+//        rabbitMQSender.send(new RabbitMQMessage("exchange.restaurant", "key1.restaurant", message));
 
         // 注册事务提交后的回调，事务提交成功后才发送消息
 //        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
