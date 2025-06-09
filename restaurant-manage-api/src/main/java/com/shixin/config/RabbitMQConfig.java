@@ -1,5 +1,9 @@
 package com.shixin.config;
 
+import com.shixin.po.InboxMessage;
+import com.shixin.po.InboxMessageStatus;
+import com.shixin.repo.InboxMessageRepo;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -11,12 +15,17 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @Configuration
 public class RabbitMQConfig {
     public static final String RESTAURANT_ROUTING_KEY = "key.restaurant";
     public static final String RESTAURANT_EXCHANGE = "exchange.restaurant";
     public static final String RESTAURANT_QUEUE = "queue.restaurant";
+
+    @Resource
+    private InboxMessageRepo inboxMessageRepo;
 
 //    @Bean
 //    public ConnectionFactory connectionFactory() {
@@ -52,6 +61,17 @@ public class RabbitMQConfig {
     public RabbitListenerErrorHandler rabbitListenerErrorHandler() {
         return (amqpMessage, channel, message, exception) -> {
             log.error("消息处理失败，记录重试次数更新数据库，amqpMessage={}, channel={}, message={}", amqpMessage, channel, message);
+            String messageId = amqpMessage.getMessageProperties().getMessageId();
+            if (messageId != null) {
+                InboxMessage inboxMessage = inboxMessageRepo.findById(messageId).orElse(null);
+                if (inboxMessage != null) {
+                    inboxMessage.setStatus(InboxMessageStatus.HANDLE_FAILED);
+                    inboxMessage.setUpdateTime(LocalDateTime.now());
+                    inboxMessage.setError(exception.getCause().getLocalizedMessage());
+                    inboxMessage.setRetryCount(inboxMessage.getRetryCount() + 1);
+                    inboxMessageRepo.save(inboxMessage);
+                }
+            }
             channel.basicReject(amqpMessage.getMessageProperties().getDeliveryTag(), false);
             return exception;
         };
@@ -61,6 +81,15 @@ public class RabbitMQConfig {
     public MessageRecoverer messageRecoverer() {
         return (message, cause) -> {
             log.info("消息处理重试多次仍然失败，放弃处理，message={}", message, cause);
+            String messageId = message.getMessageProperties().getMessageId();
+            if (messageId != null) {
+                InboxMessage inboxMessage = inboxMessageRepo.findById(messageId).orElse(null);
+                if (inboxMessage != null) {
+                    inboxMessage.setStatus(InboxMessageStatus.HANDLE_FAILED);
+                    inboxMessage.setUpdateTime(LocalDateTime.now());
+                    inboxMessageRepo.save(inboxMessage);
+                }
+            }
         };
     }
 

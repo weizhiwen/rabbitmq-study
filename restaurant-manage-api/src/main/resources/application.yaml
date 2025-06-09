@@ -19,7 +19,7 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: false
-    show-sql: true
+#    show-sql: true
 
   rabbitmq:
     addresses: 192.168.3.21:15672
