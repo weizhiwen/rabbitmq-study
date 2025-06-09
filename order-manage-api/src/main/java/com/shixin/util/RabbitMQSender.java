@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shixin.po.OutboxMessage;
 import com.shixin.po.OutboxMessageStatus;
-import com.shixin.repo.OutBoxMessageRepo;
+import com.shixin.repo.OutboxMessageRepo;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
@@ -30,7 +30,7 @@ public class RabbitMQSender {
     @Resource
     private RabbitTemplate rabbitTemplate;
     @Resource
-    private OutBoxMessageRepo outBoxMessageRepo;
+    private OutboxMessageRepo outBoxMessageRepo;
     @Resource
     private ObjectMapper objectMapper;
 

@@ -2,7 +2,7 @@ package com.shixin.schedule;
 
 import com.shixin.po.OutboxMessage;
 import com.shixin.po.OutboxMessageStatus;
-import com.shixin.repo.OutBoxMessageRepo;
+import com.shixin.repo.OutboxMessageRepo;
 import com.shixin.util.RabbitMQSender;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -13,10 +13,10 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class OutBoxMessageSentScheduledTask {
+public class OutboxMessageSentScheduledTask {
 
     @Resource
-    private OutBoxMessageRepo outBoxMessageRepo;
+    private OutboxMessageRepo outBoxMessageRepo;
     @Resource
     private RabbitMQSender rabbitMQSender;
 

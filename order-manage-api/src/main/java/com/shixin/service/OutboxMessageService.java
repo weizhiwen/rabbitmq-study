@@ -2,7 +2,7 @@ package com.shixin.service;
 
 import com.shixin.po.OutboxMessage;
 import com.shixin.po.OutboxMessageStatus;
-import com.shixin.repo.OutBoxMessageRepo;
+import com.shixin.repo.OutboxMessageRepo;
 import com.shixin.util.RabbitMQSender;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Service
 public class OutboxMessageService {
     @Resource
-    private OutBoxMessageRepo outboxMessageRepo;
+    private OutboxMessageRepo outboxMessageRepo;
     @Resource
     private RabbitMQSender rabbitMQSender;
 

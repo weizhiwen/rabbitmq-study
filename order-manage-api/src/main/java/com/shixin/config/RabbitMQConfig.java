@@ -3,7 +3,7 @@ package com.shixin.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shixin.po.OutboxMessage;
 import com.shixin.po.OutboxMessageStatus;
-import com.shixin.repo.OutBoxMessageRepo;
+import com.shixin.repo.OutboxMessageRepo;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.*;
@@ -13,12 +13,6 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.retry.RetryCallback;
-import org.springframework.retry.RetryContext;
-import org.springframework.retry.RetryListener;
-import org.springframework.retry.backoff.ExponentialBackOffPolicy;
-import org.springframework.retry.policy.SimpleRetryPolicy;
-import org.springframework.retry.support.RetryTemplate;
 
 import java.time.LocalDateTime;
 
@@ -30,7 +24,7 @@ public class RabbitMQConfig {
     public static final String ORDER_ROUTING_KEY = "key.order";
 
     @Resource
-    private OutBoxMessageRepo outBoxMessageRepo;
+    private OutboxMessageRepo outBoxMessageRepo;
     @Resource
     private ObjectMapper objectMapper;
 

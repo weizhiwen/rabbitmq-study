@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface OutBoxMessageRepo extends CrudRepository<OutboxMessage, String> {
+public interface OutboxMessageRepo extends CrudRepository<OutboxMessage, String> {
 
     @Query("select o from OutboxMessage o where o.status = :status")
     List<OutboxMessage> findByStatus(@Param("status") OutboxMessageStatus status);
