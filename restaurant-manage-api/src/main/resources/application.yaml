@@ -40,3 +40,8 @@ spring:
           multiplier: 2
           max-interval: 10000
         prefetch: 2
+    connection-timeout: 5000
+    cache:
+      channel:
+        checkout-timeout: 1000
+        size: 25
